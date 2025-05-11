@@ -136,7 +136,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(DShape2DTransform, From2D, Shape2DTransform_From2D
 
 IMPLEMENT_CLASS(DShape2D, false, false)
 
-static void Shape2D_SetTransform(DShape2D* self, DShape2DTransform *transform)
+static void Shape2D_SetTransform(DShape2D* self, DShape2DTransform* transform)
 {
 	self->transform = PARAM_NULLCHECK(transform, transform)->transform;
 }
@@ -219,7 +219,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(DShape2D, PushTriangle, Shape2D_PushTriangle)
 //
 //==========================================================================
 
-int F2DDrawer::AddCommand(RenderCommand *data) 
+int F2DDrawer::AddCommand(RenderCommand* data)
 {
 	data->mScreenFade = screenFade;
 	if (mData.Size() > 0 && data->isCompatible(mData.Last()))
@@ -252,7 +252,7 @@ void F2DDrawer::AddIndices(int firstvert, int count, ...)
 	}
 }
 
-void F2DDrawer::AddIndices(int firstvert, TArray<int> &v)
+void F2DDrawer::AddIndices(int firstvert, TArray<int>& v)
 {
 	int addr = mIndices.Reserve(v.Size());
 	for (unsigned i = 0; i < v.Size(); i++)
@@ -269,7 +269,7 @@ void F2DDrawer::AddIndices(int firstvert, TArray<int> &v)
 //
 //==========================================================================
 
-bool F2DDrawer::SetStyle(FGameTexture *tex, DrawParms &parms, PalEntry &vertexcolor, RenderCommand &quad)
+bool F2DDrawer::SetStyle(FGameTexture* tex, DrawParms& parms, PalEntry& vertexcolor, RenderCommand& quad)
 {
 	FRenderStyle style = parms.style;
 	float alpha;
@@ -387,7 +387,7 @@ bool F2DDrawer::SetStyle(FGameTexture *tex, DrawParms &parms, PalEntry &vertexco
 		else if (quad.mDrawMode == TM_INVERSE) quad.mDrawMode = TM_INVERTOPAQUE;
 	}
 	quad.mRenderStyle = parms.style;	// this  contains the blend mode and blend equation settings.
-    if (parms.burn) quad.mFlags |= DTF_Burn;
+	if (parms.burn) quad.mFlags |= DTF_Burn;
 	return true;
 }
 
@@ -397,7 +397,7 @@ bool F2DDrawer::SetStyle(FGameTexture *tex, DrawParms &parms, PalEntry &vertexco
 //
 //==========================================================================
 
-void F2DDrawer::SetColorOverlay(PalEntry color, float alpha, PalEntry &vertexcolor, PalEntry &overlaycolor)
+void F2DDrawer::SetColorOverlay(PalEntry color, float alpha, PalEntry& vertexcolor, PalEntry& overlaycolor)
 {
 	if (color.a != 0 && (color & 0xffffff) != 0)
 	{
@@ -499,10 +499,10 @@ void F2DDrawer::AddTexture(FGameTexture* img, DrawParms& parms)
 			(t * DVector3(x + w, y,     1.0)).XY(),
 			(t * DVector3(x + w, y + h, 1.0)).XY()
 		};
-		double minx = std::min_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.X < d1.X; })->X;
-		double maxx = std::max_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.X < d1.X; })->X;
-		double miny = std::min_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
-		double maxy = std::max_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
+		double minx = std::min_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.X < d1.X; })->X;
+		double maxx = std::max_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.X < d1.X; })->X;
+		double miny = std::min_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
+		double maxy = std::max_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
 
 		if (minx < (double)parms.lclip || miny < (double)parms.uclip || maxx >(double)parms.rclip || maxy >(double)parms.dclip)
 		{
@@ -597,7 +597,7 @@ void F2DDrawer::AddShape(FGameTexture* img, DShape2D* shape, DrawParms& parms)
 		ThrowAbortException(X_OTHER, "shape is null");
 
 	// [MK] bail out if vertex/coord array sizes are mismatched
-	if ( shape->mVertices.Size() != shape->mCoords.Size() )
+	if (shape->mVertices.Size() != shape->mCoords.Size())
 		ThrowAbortException(X_OTHER, "Mismatch in vertex/coord count: %u != %u", shape->mVertices.Size(), shape->mCoords.Size());
 
 	if (parms.style.BlendOp == STYLEOP_None) return;	// not supposed to be drawn.
@@ -640,12 +640,12 @@ void F2DDrawer::AddShape(FGameTexture* img, DShape2D* shape, DrawParms& parms)
 		shape->miny = 16383;
 		shape->maxx = -16384;
 		shape->maxy = -16384;
-		for ( int i=0; i<dg.mVertCount; i++ )
+		for (int i = 0; i < dg.mVertCount; i++)
 		{
-			if ( shape->mVertices[i].X < shape->minx ) shape->minx = shape->mVertices[i].X;
-			if ( shape->mVertices[i].Y < shape->miny ) shape->miny = shape->mVertices[i].Y;
-			if ( shape->mVertices[i].X > shape->maxx ) shape->maxx = shape->mVertices[i].X;
-			if ( shape->mVertices[i].Y > shape->maxy ) shape->maxy = shape->mVertices[i].Y;
+			if (shape->mVertices[i].X < shape->minx) shape->minx = shape->mVertices[i].X;
+			if (shape->mVertices[i].Y < shape->miny) shape->miny = shape->mVertices[i].Y;
+			if (shape->mVertices[i].X > shape->maxx) shape->maxx = shape->mVertices[i].X;
+			if (shape->mVertices[i].Y > shape->maxy) shape->maxy = shape->mVertices[i].Y;
 		}
 	}
 	auto t = this->transform * shape->transform;
@@ -655,10 +655,10 @@ void F2DDrawer::AddShape(FGameTexture* img, DShape2D* shape, DrawParms& parms)
 		(t * DVector3(shape->maxx, shape->miny, 1.0)).XY(),
 		(t * DVector3(shape->maxx, shape->maxy, 1.0)).XY()
 	};
-	double minx = std::min_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.X < d1.X; })->X;
-	double maxx = std::max_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.X < d1.X; })->X;
-	double miny = std::min_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
-	double maxy = std::max_element(tCorners.begin(), tCorners.end(), [] (auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
+	double minx = std::min_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.X < d1.X; })->X;
+	double maxx = std::max_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.X < d1.X; })->X;
+	double miny = std::min_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
+	double maxy = std::max_element(tCorners.begin(), tCorners.end(), [](auto d0, auto d1) { return d0.Y < d1.Y; })->Y;
 	if (minx < (double)parms.lclip || miny < (double)parms.uclip || maxx >(double)parms.rclip || maxy >(double)parms.dclip)
 	{
 		dg.mScissor[0] = parms.lclip + int(offset.X);
@@ -685,18 +685,18 @@ void F2DDrawer::AddShape(FGameTexture* img, DShape2D* shape, DrawParms& parms)
 		auto buf = &shape->bufferInfo->buffers[shape->bufferInfo->bufIndex];
 
 		auto verts = TArray<TwoDVertex>(dg.mVertCount, true);
-		for ( int i=0; i<dg.mVertCount; i++ )
+		for (int i = 0; i < dg.mVertCount; i++)
 			verts[i].Set(shape->mVertices[i].X, shape->mVertices[i].Y, 0, shape->mCoords[i].X, shape->mCoords[i].Y, vertexcolor);
 
-		for ( int i=0; i<int(shape->mIndices.Size()); i+=3 )
+		for (int i = 0; i<int(shape->mIndices.Size()); i += 3)
 		{
 			// [MK] bail out if any indices are out of bounds
-			for ( int j=0; j<3; j++ )
+			for (int j = 0; j < 3; j++)
 			{
-				if ( shape->mIndices[i+j] < 0 )
-					ThrowAbortException(X_ARRAY_OUT_OF_BOUNDS, "Triangle %u index %u is negative: %i\n", i/3, j, shape->mIndices[i+j]);
-				if ( shape->mIndices[i+j] >= dg.mVertCount )
-					ThrowAbortException(X_ARRAY_OUT_OF_BOUNDS, "Triangle %u index %u: %u, max: %u\n", i/3, j, shape->mIndices[i+j], dg.mVertCount-1);
+				if (shape->mIndices[i + j] < 0)
+					ThrowAbortException(X_ARRAY_OUT_OF_BOUNDS, "Triangle %u index %u is negative: %i\n", i / 3, j, shape->mIndices[i + j]);
+				if (shape->mIndices[i + j] >= dg.mVertCount)
+					ThrowAbortException(X_ARRAY_OUT_OF_BOUNDS, "Triangle %u index %u: %u, max: %u\n", i / 3, j, shape->mIndices[i + j], dg.mVertCount - 1);
 			}
 		}
 
@@ -717,10 +717,10 @@ void F2DDrawer::AddShape(FGameTexture* img, DShape2D* shape, DrawParms& parms)
 //
 //==========================================================================
 
-void F2DDrawer::AddPoly(FGameTexture *texture, FVector2 *points, int npoints,
-		double originx, double originy, double scalex, double scaley,
-		DAngle rotation, const FColormap &colormap, PalEntry flatcolor, double fadelevel,
-		uint32_t *indices, size_t indexcount)
+void F2DDrawer::AddPoly(FGameTexture* texture, FVector2* points, int npoints,
+	double originx, double originy, double scalex, double scaley,
+	DAngle rotation, const FColormap& colormap, PalEntry flatcolor, double fadelevel,
+	uint32_t* indices, size_t indexcount)
 {
 	RenderCommand poly;
 
@@ -730,7 +730,7 @@ void F2DDrawer::AddPoly(FGameTexture *texture, FVector2 *points, int npoints,
 	poly.mFlags |= DTF_Wrap;
 	poly.mDesaturate = colormap.Desaturation;
 
-	PalEntry color0; 
+	PalEntry color0;
 	double invfade = 1. - fadelevel;
 
 	color0.r = uint8_t(colormap.LightColor.r * invfade);
@@ -765,7 +765,7 @@ void F2DDrawer::AddPoly(FGameTexture *texture, FVector2 *points, int npoints,
 			u = t * cosrot - v * sinrot;
 			v = v * cosrot + t * sinrot;
 		}
-		mVertices[poly.mVertIndex+i].Set(points[i].X, points[i].Y, 0, u*uscale, v*vscale, color0);
+		mVertices[poly.mVertIndex + i].Set(points[i].X, points[i].Y, 0, u * uscale, v * vscale, color0);
 	}
 	poly.mIndexIndex = mIndices.Size();
 
@@ -825,7 +825,7 @@ void F2DDrawer::AddPoly(FGameTexture* img, FVector4* vt, size_t vtcount, const u
 	dg.mFlags |= DTF_Wrap;
 	auto ptr = &mVertices[dg.mVertIndex];
 
-	for (size_t i=0;i<vtcount;i++)
+	for (size_t i = 0; i < vtcount; i++)
 	{
 		ptr->Set(vt[i].X, vt[i].Y, 0.f, vt[i].Z, vt[i].W, color);
 		ptr++;
@@ -878,7 +878,7 @@ float F2DDrawer::GetClassicFlatScalarHeight()
 	return sh;
 }
 
-void F2DDrawer::AddFlatFill(int left, int top, int right, int bottom, FGameTexture *src, int local_origin, double flatscale, PalEntry color, ERenderStyle style)
+void F2DDrawer::AddFlatFill(int left, int top, int right, int bottom, FGameTexture* src, int local_origin, double flatscale, PalEntry color, ERenderStyle style)
 {
 	float fU1, fU2, fV1, fV2;
 
@@ -1003,14 +1003,14 @@ void F2DDrawer::AddFlatFill(int left, int top, int right, int bottom, FGameTextu
 //
 //===========================================================================
 
-void F2DDrawer::AddColorOnlyQuad(int x1, int y1, int w, int h, PalEntry color, FRenderStyle *style, bool prepend)
+void F2DDrawer::AddColorOnlyQuad(int x1, int y1, int w, int h, PalEntry color, FRenderStyle* style, bool prepend)
 {
 	RenderCommand dg;
 
 	dg.mType = DrawTypeTriangles;
 	dg.mVertCount = 4;
 	dg.mVertIndex = (int)mVertices.Reserve(4);
-	dg.mRenderStyle = style? *style : LegacyRenderStyles[STYLE_Translucent];
+	dg.mRenderStyle = style ? *style : LegacyRenderStyles[STYLE_Translucent];
 	auto ptr = &mVertices[dg.mVertIndex];
 	ptr->Set(x1, y1, 0, 0, 0, color); ptr++;
 	ptr->Set(x1, y1 + h, 0, 0, 0, color); ptr++;
@@ -1069,7 +1069,7 @@ void F2DDrawer::AddLine(const DVector2& v1, const DVector2& v2, const IntRect* c
 	dg.transform.Cells[0][2] += offset.X;
 	dg.transform.Cells[1][2] += offset.Y;
 	mVertices[dg.mVertIndex].Set(v1.X, v1.Y, 0, 0, 0, p);
-	mVertices[dg.mVertIndex+1].Set(v2.X, v2.Y, 0, 0, 0, p);
+	mVertices[dg.mVertIndex + 1].Set(v2.X, v2.Y, 0, 0, 0, p);
 	AddCommand(&dg);
 }
 
@@ -1251,9 +1251,9 @@ public:
 	}
 };
 
-FCanvas* GetTextureCanvas(const FString& texturename)
+FCanvas* GetTextureCanvas(const FString& texturename, const ETextureType usetype = ETextureType::Wall)
 {
-	FTextureID textureid = TexMan.CheckForTexture(texturename.GetChars(), ETextureType::Wall, FTextureManager::TEXMAN_Overridable);
+	FTextureID textureid = TexMan.CheckForTexture(texturename.GetChars(), usetype, FTextureManager::TEXMAN_Overridable);
 	if (textureid.isValid())
 	{
 		// Only proceed if the texture is a canvas texture.
@@ -1274,4 +1274,40 @@ FCanvas* GetTextureCanvas(const FString& texturename)
 		}
 	}
 	return nullptr;
+}
+
+FCanvas* CreateTextureCanvas(const FString& canvasname, const int width, const int height, const int offsetx = 0, const int offsety = 0, const ETextureType usetype = ETextureType::Any)
+{
+	FTextureID textureid = TexMan.CheckForTexture(canvasname.GetChars(), usetype, FTextureManager::TEXMAN_Overridable);
+	if (textureid.Exists()) { return nullptr; } // Don't allow overwrite of existing textures
+
+	static InitTextureCanvasGC initCanvasGC;
+
+	FCanvasTexture* canvas = new FCanvasTexture(width, height);
+	canvas->Canvas = Create<FCanvas>();
+	canvas->Canvas->Tex = canvas;
+	canvas->aspectRatio = (float)width / (float)height;
+	canvas->Canvas->Drawer.SetSize(width, height);
+	AllCanvases.Push(canvas->Canvas);
+
+	FGameTexture* viewer = MakeGameTexture(canvas, canvasname.GetChars(), usetype);
+	viewer->SetDisplaySize((float)width, (float)height);
+	viewer->SetOffsets(offsetx, offsety);
+
+	TexMan.AddGameTexture(viewer);
+
+	return canvas->Canvas;
+}
+
+DEFINE_ACTION_FUNCTION(FCanvas, Create)
+{
+	PARAM_PROLOGUE;
+	PARAM_STRING(canvasname);
+	PARAM_INT(width);
+	PARAM_INT(height);
+	PARAM_INT(offsetx);
+	PARAM_INT(offsety);
+	PARAM_INT(usetype);
+
+	ACTION_RETURN_POINTER(CreateTextureCanvas(canvasname, width, height, offsetx, offsety, static_cast<ETextureType>(usetype)));
 }

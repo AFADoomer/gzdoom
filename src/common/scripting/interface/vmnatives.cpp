@@ -32,7 +32,7 @@
 **---------------------------------------------------------------------------
 **
 **
-*/ 
+*/
 
 
 #include "texturemanager.h"
@@ -561,7 +561,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(_TexMan, CheckRealHeight, CheckRealHeight)
 
 static int OkForLocalization_(int index, const FString& substitute)
 {
-	return sysCallbacks.OkForLocalization? sysCallbacks.OkForLocalization(FSetTextureID(index), substitute.GetChars()) : false;
+	return sysCallbacks.OkForLocalization ? sysCallbacks.OkForLocalization(FSetTextureID(index), substitute.GetChars()) : false;
 }
 
 DEFINE_ACTION_FUNCTION_NATIVE(_TexMan, OkForLocalization, OkForLocalization_)
@@ -569,7 +569,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(_TexMan, OkForLocalization, OkForLocalization_)
 	PARAM_PROLOGUE;
 	PARAM_INT(name);
 	PARAM_STRING(subst)
-	ACTION_RETURN_INT(OkForLocalization_(name, subst));
+		ACTION_RETURN_INT(OkForLocalization_(name, subst));
 }
 
 static int UseGamePalette(int index)
@@ -587,13 +587,14 @@ DEFINE_ACTION_FUNCTION_NATIVE(_TexMan, UseGamePalette, UseGamePalette)
 	ACTION_RETURN_INT(UseGamePalette(texid));
 }
 
-FCanvas* GetTextureCanvas(const FString& texturename);
+FCanvas* GetTextureCanvas(const FString& texturename, const ETextureType usetype = ETextureType::Wall);
 
 DEFINE_ACTION_FUNCTION(_TexMan, GetCanvas)
 {
 	PARAM_PROLOGUE;
 	PARAM_STRING(texturename);
-	ACTION_RETURN_POINTER(GetTextureCanvas(texturename));
+	PARAM_INT(usetype);
+	ACTION_RETURN_POINTER(GetTextureCanvas(texturename, static_cast<ETextureType>(usetype)));
 }
 
 //=====================================================================================
@@ -602,7 +603,7 @@ DEFINE_ACTION_FUNCTION(_TexMan, GetCanvas)
 //
 //=====================================================================================
 
-static FFont *GetFont(int name)
+static FFont* GetFont(int name)
 {
 	return V_GetFont(FName(ENamedName(name)).GetChars());
 }
@@ -614,7 +615,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(FFont, GetFont, GetFont)
 	ACTION_RETURN_POINTER(GetFont(name));
 }
 
-static FFont *FindFont(int name)
+static FFont* FindFont(int name)
 {
 	return FFont::FindFont(FName(ENamedName(name)));
 }
@@ -626,7 +627,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(FFont, FindFont, FindFont)
 	ACTION_RETURN_POINTER(FFont::FindFont(name));
 }
 
-static int GetCharWidth(FFont *font, int code)
+static int GetCharWidth(FFont* font, int code)
 {
 	return font->GetCharWidth(code);
 }
@@ -638,7 +639,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(FFont, GetCharWidth, GetCharWidth)
 	ACTION_RETURN_INT(self->GetCharWidth(code));
 }
 
-static int GetHeight(FFont *font)
+static int GetHeight(FFont* font)
 {
 	return font->GetHeight();
 }
@@ -660,7 +661,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(FFont, GetDisplacement, GetDisplacement)
 	ACTION_RETURN_INT(self->GetDisplacement());
 }
 
-double GetBottomAlignOffset(FFont *font, int c);
+double GetBottomAlignOffset(FFont* font, int c);
 DEFINE_ACTION_FUNCTION_NATIVE(FFont, GetBottomAlignOffset, GetBottomAlignOffset)
 {
 	PARAM_SELF_STRUCT_PROLOGUE(FFont);
@@ -668,9 +669,9 @@ DEFINE_ACTION_FUNCTION_NATIVE(FFont, GetBottomAlignOffset, GetBottomAlignOffset)
 	ACTION_RETURN_FLOAT(GetBottomAlignOffset(self, code));
 }
 
-static int StringWidth(FFont *font, const FString &str, int localize)
+static int StringWidth(FFont* font, const FString& str, int localize)
 {
-	const char *txt = (localize && str[0] == '$') ? GStrings.GetString(&str[1]) : str.GetChars();
+	const char* txt = (localize && str[0] == '$') ? GStrings.GetString(&str[1]) : str.GetChars();
 	return font->StringWidth(txt);
 }
 
@@ -696,9 +697,9 @@ DEFINE_ACTION_FUNCTION_NATIVE(FFont, GetMaxAscender, GetMaxAscender)
 	ACTION_RETURN_INT(GetMaxAscender(self, str, localize));
 }
 
-static int CanPrint(FFont *font, const FString &str, int localize)
+static int CanPrint(FFont* font, const FString& str, int localize)
 {
-	const char *txt = (localize && str[0] == '$') ? GStrings.GetString(&str[1]) : str.GetChars();
+	const char* txt = (localize && str[0] == '$') ? GStrings.GetString(&str[1]) : str.GetChars();
 	return font->CanPrint(txt);
 }
 
@@ -722,7 +723,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(FFont, FindFontColor, FindFontColor)
 	ACTION_RETURN_INT((int)V_FindFontColor(code));
 }
 
-static void GetCursor(FFont *font, FString *result)
+static void GetCursor(FFont* font, FString* result)
 {
 	*result = font->GetCursor();
 }
@@ -960,15 +961,15 @@ DEFINE_ACTION_FUNCTION(_CVar, SetInt)
 	UCVarValue v;
 	v.Int = val;
 
-	if(self->GetFlags() & CVAR_ZS_CUSTOM_CLONE)
+	if (self->GetFlags() & CVAR_ZS_CUSTOM_CLONE)
 	{
 		auto realCVar = (FBaseCVar*)(self->GetExtraDataPointer());
 		assert(realCVar->GetFlags() & CVAR_ZS_CUSTOM);
-		
+
 		v = realCVar->GenericZSCVarCallback(v, CVAR_Int);
 		self->SetGenericRep(v, realCVar->GetRealType());
 
-		if(realCVar->GetRealType() == CVAR_String) delete[] v.String;
+		if (realCVar->GetRealType() == CVAR_String) delete[] v.String;
 	}
 	else
 	{
@@ -993,7 +994,7 @@ DEFINE_ACTION_FUNCTION(_CVar, SetFloat)
 	UCVarValue v;
 	v.Float = (float)val;
 
-	if(self->GetFlags() & CVAR_ZS_CUSTOM_CLONE)
+	if (self->GetFlags() & CVAR_ZS_CUSTOM_CLONE)
 	{
 		auto realCVar = (FBaseCVar*)(self->GetExtraDataPointer());
 		assert(realCVar->GetFlags() & CVAR_ZS_CUSTOM);
@@ -1001,7 +1002,7 @@ DEFINE_ACTION_FUNCTION(_CVar, SetFloat)
 		v = realCVar->GenericZSCVarCallback(v, CVAR_Float);
 		self->SetGenericRep(v, realCVar->GetRealType());
 
-		if(realCVar->GetRealType() == CVAR_String) delete[] v.String;
+		if (realCVar->GetRealType() == CVAR_String) delete[] v.String;
 	}
 	else
 	{
@@ -1027,7 +1028,7 @@ DEFINE_ACTION_FUNCTION(_CVar, SetString)
 	UCVarValue v;
 	v.String = val.GetChars();
 
-	if(self->GetFlags() & CVAR_ZS_CUSTOM_CLONE)
+	if (self->GetFlags() & CVAR_ZS_CUSTOM_CLONE)
 	{
 		auto realCVar = (FBaseCVar*)(self->GetExtraDataPointer());
 		assert(realCVar->GetFlags() & CVAR_ZS_CUSTOM);
@@ -1035,7 +1036,7 @@ DEFINE_ACTION_FUNCTION(_CVar, SetString)
 		v = realCVar->GenericZSCVarCallback(v, CVAR_String);
 		self->SetGenericRep(v, realCVar->GetRealType());
 
-		if(realCVar->GetRealType() == CVAR_String) delete[] v.String;
+		if (realCVar->GetRealType() == CVAR_String) delete[] v.String;
 	}
 	else
 	{
@@ -1187,7 +1188,7 @@ DEFINE_ACTION_FUNCTION(_Console, Printf)
 	PARAM_PROLOGUE;
 	PARAM_VA_POINTER(va_reginfo)	// Get the hidden type information array
 
-	FString s = FStringFormat(VM_ARGS_NAMES);
+		FString s = FStringFormat(VM_ARGS_NAMES);
 	Printf("%s\n", s.GetChars());
 	return 0;
 }
@@ -1198,9 +1199,9 @@ DEFINE_ACTION_FUNCTION(_Console, PrintfEx)
 	PARAM_INT(printlevel);
 	PARAM_VA_POINTER(va_reginfo)	// Get the hidden type information array
 
-	FString s = FStringFormat(VM_ARGS_NAMES,1);
+		FString s = FStringFormat(VM_ARGS_NAMES, 1);
 
-	Printf(printlevel,"%s\n", s.GetChars());
+	Printf(printlevel, "%s\n", s.GetChars());
 	return 0;
 }
 
@@ -1343,8 +1344,8 @@ void QuatNLerp(
 	DQuaternion* pquat
 )
 {
-	auto from = DQuaternion { ax, ay, az, aw };
-	auto to   = DQuaternion { bx, by, bz, bw };
+	auto from = DQuaternion{ ax, ay, az, aw };
+	auto to = DQuaternion{ bx, by, bz, bw };
 	*pquat = DQuaternion::NLerp(from, to, t);
 }
 
@@ -1373,8 +1374,8 @@ void QuatSLerp(
 	DQuaternion* pquat
 )
 {
-	auto from = DQuaternion { ax, ay, az, aw };
-	auto to   = DQuaternion { bx, by, bz, bw };
+	auto from = DQuaternion{ ax, ay, az, aw };
+	auto to = DQuaternion{ bx, by, bz, bw };
 	*pquat = DQuaternion::SLerp(from, to, t);
 }
 
@@ -1430,10 +1431,10 @@ DEFINE_ACTION_FUNCTION_NATIVE(_QuatStruct, Inverse, QuatInverse)
 	ACTION_RETURN_QUAT(quat);
 }
 
-PFunction * FindFunctionPointer(PClass * cls, int fn_name)
+PFunction* FindFunctionPointer(PClass* cls, int fn_name)
 {
 	auto fn = dyn_cast<PFunction>(cls->FindSymbol(ENamedName(fn_name), true));
-	return (fn && (fn->Variants[0].Flags & (VARF_Action | VARF_Virtual)) == 0 ) ? fn : nullptr;
+	return (fn && (fn->Variants[0].Flags & (VARF_Action | VARF_Virtual)) == 0) ? fn : nullptr;
 }
 
 DEFINE_ACTION_FUNCTION_NATIVE(DObject, FindFunction, FindFunctionPointer)
@@ -1493,7 +1494,7 @@ IMPLEMENT_CLASS(DScriptScanner, false, false);
 
 static void OpenLumpNum(DScriptScanner* self, int lump) { return self->wrapped.OpenLumpNum(lump); }
 static void OpenString(DScriptScanner* self, const FString* name, FString* script) { return self->wrapped.OpenString(name->GetChars(), *script); }
-static void SavePos(DScriptScanner* self, FScanner::SavedPos *pos) { *pos = self->wrapped.SavePos(); }
+static void SavePos(DScriptScanner* self, FScanner::SavedPos* pos) { *pos = self->wrapped.SavePos(); }
 static void RestorePos(DScriptScanner* self, const FScanner::SavedPos* pos) { return self->wrapped.RestorePos(*pos); }
 static void GetStringContents(DScriptScanner* self, FString* str) { *str = self->wrapped.String; }
 static void UnGet(DScriptScanner* self) { return self->wrapped.UnGet(); }
